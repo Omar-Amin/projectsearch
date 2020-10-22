@@ -11,6 +11,7 @@ export class ProductSearchComponent implements OnInit {
   products = []
 
   currentPage: number = 0
+  productsAmount: number = 10
 
   constructor(private http: HttpClient) {
     this.http.get('./assets/products.json').subscribe(data => {
@@ -28,11 +29,15 @@ export class ProductSearchComponent implements OnInit {
   }
 
   nextPage() {
-
+    this.endOfPage() ? null : this.currentPage++
   }
 
   prevPage() {
+    this.currentPage === 0 ? null : this.currentPage--
+  }
 
+  endOfPage() {
+    return (this.currentPage + 1) * this.productsAmount >= this.products.length
   }
 
 }

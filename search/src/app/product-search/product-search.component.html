@@ -5,9 +5,14 @@
     </div>
     <div>
         <ul>
-            <li *ngFor="let product of products | slice: 0 : 20; let i = index">
-                {{i}} {{product}}
+            <li
+                *ngFor="let product of products | slice: currentPage*productsAmount : (currentPage+1)*productsAmount; let i = index">
+                {{i}} {{product.title}}
             </li>
         </ul>
     </div>
+    <footer>
+        <button *ngIf='currentPage > 0' (click)='prevPage()'>Prev</button>
+        <button *ngIf='!endOfPage()' (click)='nextPage()'>Next</button>
+    </footer>
 </div>
