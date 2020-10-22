@@ -1,43 +1,68 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
+import { Subject } from 'rxjs'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Product } from '../../../../products'
 
 @Component({
   selector: 'app-product-search',
   templateUrl: './product-search.component.html',
   styleUrls: ['./product-search.component.css']
 })
+
 export class ProductSearchComponent implements OnInit {
 
   products = []
+  filtered = []
 
   currentPage: number = 0
   productsAmount: number = 10
 
+  searchSubject = new Subject<string>()
+
   constructor(private http: HttpClient) {
-    this.http.get('./assets/products.json').subscribe(data => {
-      const jsonVal = JSON.stringify(data)
-      const toJson = JSON.parse(jsonVal)
-      this.products = toJson.content
+    this.http.get<Product[]>('./assets/products.json').subscribe(data => {
+      this.products = data['content']
+      this.filtered = this.products
     })
   }
 
   ngOnInit(): void {
+    this.searchSubject.pipe(
+      debounceTime(200),
+      distinctUntilChanged()
+    ).subscribe(val => {
+      this.filtered = this.products.filter(e => this.containsProduct(val, e))
+    })
   }
 
-  onChange(e) {
-    console.log(this.products[264])
+  onChange(e): void {
+    this.searchSubject.next(e.target.value)
   }
 
-  nextPage() {
+  nextPage(): void {
     this.endOfPage() ? null : this.currentPage++
   }
 
-  prevPage() {
+  prevPage(): void {
     this.currentPage === 0 ? null : this.currentPage--
   }
 
-  endOfPage() {
+  // Checks if we are at the end of the page
+  // Returns a boolean
+  endOfPage(): boolean {
     return (this.currentPage + 1) * this.productsAmount >= this.products.length
+  }
+
+  containsProduct(searchVal: string, product: Product): boolean {
+    const val = searchVal.toLowerCase()
+    const title = product.title.toLowerCase()
+
+    if (title.includes(val)) {
+      return true
+    }
+
+    return false
   }
 
 }
