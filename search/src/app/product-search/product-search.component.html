@@ -1,18 +1,18 @@
-<div>
+<div class='container'>
     <div>
-        <input (keyup)='onChange($event)' type='text'>
-        <button> Search </button>
+        <input class="search" placeholder="Search" (keyup)='onChange($event)' type='text'>
     </div>
-    <div>
-        <ul>
-            <li
-                *ngFor="let product of filtered | slice: currentPage*productsAmount : (currentPage+1)*productsAmount; let i = index">
-                {{product.title}}
-            </li>
-        </ul>
+    <div *ngIf='products.length > 0' class="list-header">
+        <div class="title">Title</div>
+        <div class="price">Price </div>
+        <div class="barcode">Barcode</div>
     </div>
-    <footer>
-        <button *ngIf='currentPage > 0' (click)='prevPage()'>Prev</button>
-        <button *ngIf='!endOfPage()' (click)='nextPage()'>Next</button>
-    </footer>
+    <div class='items'
+        *ngFor="let product of filtered | slice: currentPage*productsAmount : (currentPage+1)*productsAmount; let i = index">
+        <product-holder [init]="product"></product-holder>
+    </div>
+    <div class="footer">
+        <button class="prev" *ngIf='currentPage > 0' (click)='prevPage()'>Prev</button>
+        <button class="next" *ngIf='!endOfPage()' (click)='nextPage()'>Next</button>
+    </div>
 </div>

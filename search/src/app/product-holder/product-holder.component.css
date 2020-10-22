@@ -1,0 +1,31 @@
+.container{
+    width: 1200px;
+    margin: 10px;
+    padding: 15px;
+    display: grid;
+    border-radius: 10px;
+    grid-template-columns: [main] 55% [title] 15% [price] 30% [column-end];
+}
+
+.container:hover{
+    background-color: #2C2C2C;
+}
+
+.title{
+    color: #BDD1E5;
+    grid-column-start: main;
+    grid-column-end: title;
+}
+
+.price{
+    color: #5AE3B1;
+    grid-column-start: title;
+    grid-column-end: price;
+    margin-left: 10px;
+}
+
+.barcode{
+    color: #8D8D8D;
+    grid-column-start: price;
+    grid-column-end: column-end;
+}

@@ -21,10 +21,6 @@ export class ProductSearchComponent implements OnInit {
   searchSubject = new Subject<string>()
 
   constructor(private http: HttpClient) {
-    this.http.get<Product[]>('./assets/products.json').subscribe(data => {
-      this.products = data['content']
-      this.filtered = this.products
-    })
   }
 
   ngOnInit(): void {
@@ -32,6 +28,9 @@ export class ProductSearchComponent implements OnInit {
       debounceTime(200),
       distinctUntilChanged()
     ).subscribe(val => {
+      if (this.products.length === 0) {
+        this.getProducts()
+      }
       this.filtered = this.products.filter(e => this.containsProduct(val, e))
     })
   }
@@ -51,7 +50,7 @@ export class ProductSearchComponent implements OnInit {
   // Checks if we are at the end of the page
   // Returns a boolean
   endOfPage(): boolean {
-    return (this.currentPage + 1) * this.productsAmount >= this.products.length
+    return (this.currentPage + 1) * this.productsAmount >= this.filtered.length
   }
 
   containsProduct(searchVal: string, product: Product): boolean {
@@ -63,6 +62,13 @@ export class ProductSearchComponent implements OnInit {
     }
 
     return false
+  }
+
+  getProducts(): void {
+    this.http.get<Product[]>('./assets/products.json').subscribe(data => {
+      this.products = data['content']
+      this.filtered = this.products
+    })
   }
 
 }

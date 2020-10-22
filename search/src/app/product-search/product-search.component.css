@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.search{
+    width: 1000px;
+    height: 75px;
+    margin: 10px;
+    font-size: 30px;
+    padding-left: 20px;
+    background-color: #6b6b6b;
+    border: none;
+    color: white;
+    border-radius: 15px;
+    outline: none;
+}
+
+.search::placeholder{
+    opacity: 0.8;
+    color: white;
+}
+
+.footer{
+    width: 250px;
+    display: grid;
+    grid-template-columns: [main] 50% [mid] 50% [rEnd];
+}
+
+.prev{
+    grid-column-start: main;
+    grid-column-end: mid;
+    margin: 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    height: 35px;
+    font-size: 18px;
+    width: 100px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    background-color: #25262C;
+    color: white;
+}
+
+.next{
+    grid-column-start: mid;
+    grid-column-end: rEnd;
+    margin: 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    height: 35px;
+    font-size: 18px;
+    width: 100px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 500;
+    background-color: #25262C;
+    color: white;
+}
+
+.next:hover{
+    cursor: pointer;
+    background-color: #36373f;
+}
+
+.prev:hover{
+    cursor: pointer;
+    background-color: #36373f;
+}
+
+.list-header{
+    width: 1200px;
+    margin: 10px;
+    padding: 15px;
+    display: grid;
+    border-radius: 10px;
+    grid-template-columns: [main] 55% [title] 15% [price] 30% [column-end];
+}
+
+.title{
+    color: #535353;
+    grid-column-start: main;
+    grid-column-end: title;
+}
+
+.price{
+    color: #535353;
+    grid-column-start: title;
+    grid-column-end: price;
+    margin-left: 10px;
+}
+
+.barcode{
+    color: #535353;
+    grid-column-start: price;
+    grid-column-end: column-end;
+}
+
+.title:hover{
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.price:hover{
+    color: white;
+    cursor: pointer;
+}
+
+.barcode:hover{
+    color: white;
+    cursor: pointer;
+}
