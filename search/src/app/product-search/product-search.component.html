@@ -3,11 +3,13 @@
         <input class="search" placeholder="Search" (keyup)='onChange($event)' type='text'>
     </div>
     <div *ngIf='products.length > 0' class="list-header">
-        <div class="title">Title</div>
-        <div class="price">Price </div>
-        <div class="barcode">Barcode</div>
+        <div (click)="sortSearch('1')" [style.color]="titleNum == 0 ? '#535353' : '#fff'" class="title">
+            Title</div>
+        <div (click)="sortSearch('2')" [style.color]="priceNum == 0 ? '#535353' : '#fff'" class="price">Price </div>
+        <div (click)="sortSearch('3')" [style.color]="barcodeNum == 0 ? '#535353' : '#fff'" class="barcode">Barcode
+        </div>
     </div>
-    <div class='items'
+    <div class=' items'
         *ngFor="let product of filtered | slice: currentPage*productsAmount : (currentPage+1)*productsAmount; let i = index">
         <product-holder [init]="product"></product-holder>
     </div>
