@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
-import { Subject } from 'rxjs'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Observable, Subject } from 'rxjs'
+import { debounceTime, exhaustMap, distinctUntilChanged, combineAll } from 'rxjs/operators'
 import { Product } from '../../../../products'
 
 @Component({
@@ -12,7 +12,7 @@ import { Product } from '../../../../products'
 
 export class ProductSearchComponent implements OnInit {
 
-  products = []
+  products = null
   filtered = []
 
   titleNum: number = 0
@@ -32,22 +32,31 @@ export class ProductSearchComponent implements OnInit {
   ngOnInit(): void {
     this.searchSubject.pipe(
       debounceTime(200),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      exhaustMap(() => {
+        if (!this.products) {
+          return this.getProducts()
+        }
+        return this.searchSubject
+      })
     ).subscribe(val => {
-      if (this.products.length === 0) {
-        this.getProducts(val)
+      if (!this.products) {
+        this.products = val['content']
+        this.filtered = this.products.filter(e => this.containsProduct(this.currentSearch, e))
       } else {
         this.filtered = this.products.filter(e => this.containsProduct(val, e))
-        this.priceNum = 0
-        this.titleNum = 0
-        this.barcodeNum = 0
       }
+      this.priceNum = 0
+      this.titleNum = 0
+      this.barcodeNum = 0
     })
   }
 
-  onChange(e): void {
-    this.currentSearch = e.target.value
-    this.searchSubject.next(e.target.value)
+  onChange(e: any): void {
+    const val = e.target.value
+    this.currentSearch = val
+    this.searchSubject.next(val)
+
   }
 
   nextPage(): void {
@@ -64,7 +73,7 @@ export class ProductSearchComponent implements OnInit {
     return (this.currentPage + 1) * this.productsAmount >= this.filtered.length
   }
 
-  containsProduct(searchVal: string, product: Product): boolean {
+  containsProduct(searchVal, product: Product): boolean {
     const val = searchVal.toLowerCase().split(" ")
     const title = product.title.toLowerCase()
 
@@ -79,12 +88,8 @@ export class ProductSearchComponent implements OnInit {
     return contains
   }
 
-  getProducts(val): void {
-    this.http.get<Product[]>('./assets/products.json').subscribe(data => {
-      this.products = data['content']
-      // to ensure to make the first search accurate
-      this.filtered = this.products.filter(e => this.containsProduct(val, e))
-    })
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>('./assets/products.json')
   }
 
   // Sorts depending on the attribute that is pressed on.

@@ -2,7 +2,7 @@
     <div>
         <input class="search" placeholder="Search" (keyup)='onChange($event)' type='text'>
     </div>
-    <div *ngIf='products.length > 0' class="list-header">
+    <div *ngIf='products' class="list-header">
         <div (click)="sortSearch('1')" [style.color]="titleNum == 0 ? '#535353' : '#fff'" class="title">
             Title</div>
         <div (click)="sortSearch('2')" [style.color]="priceNum == 0 ? '#535353' : '#fff'" class="price">Price </div>
