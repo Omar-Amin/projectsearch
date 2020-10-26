@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
-import { Observable, Subject } from 'rxjs'
+import { Observable, Subject, of } from 'rxjs'
 import { debounceTime, exhaustMap, distinctUntilChanged, combineAll } from 'rxjs/operators'
 import { Product } from '../../../../products'
 
@@ -32,20 +32,17 @@ export class ProductSearchComponent implements OnInit {
   ngOnInit(): void {
     this.searchSubject.pipe(
       debounceTime(200),
-      distinctUntilChanged(),
       exhaustMap(() => {
         if (!this.products) {
           return this.getProducts()
         }
-        return this.searchSubject
+        return of(this.products)
       })
-    ).subscribe(val => {
+    ).subscribe((val: Observable<Product[]>) => {
       if (!this.products) {
         this.products = val['content']
-        this.filtered = this.products.filter(e => this.containsProduct(this.currentSearch, e))
-      } else {
-        this.filtered = this.products.filter(e => this.containsProduct(val, e))
       }
+      this.filtered = this.products.filter((e: Product) => this.containsProduct(this.currentSearch, e))
       this.priceNum = 0
       this.titleNum = 0
       this.barcodeNum = 0
@@ -53,10 +50,11 @@ export class ProductSearchComponent implements OnInit {
   }
 
   onChange(e: any): void {
-    const val = e.target.value
-    this.currentSearch = val
-    this.searchSubject.next(val)
-
+    const val: string = e.target.value
+    if (this.currentSearch !== val) {
+      this.currentSearch = val
+      this.searchSubject.next()
+    }
   }
 
   nextPage(): void {
@@ -73,7 +71,7 @@ export class ProductSearchComponent implements OnInit {
     return (this.currentPage + 1) * this.productsAmount >= this.filtered.length
   }
 
-  containsProduct(searchVal, product: Product): boolean {
+  containsProduct(searchVal: string, product: Product): boolean {
     const val = searchVal.toLowerCase().split(" ")
     const title = product.title.toLowerCase()
 
@@ -94,7 +92,7 @@ export class ProductSearchComponent implements OnInit {
 
   // Sorts depending on the attribute that is pressed on.
   // Type 1 = sort by title, type 2 = sort by price and 3 = sort by barcode
-  sortSearch(type) {
+  sortSearch(type: number) {
     if (type == 1) {
 
       this.priceNum = 0
